@@ -7,6 +7,7 @@ namespace Assertions
 {
     public class CatalogAssertions : ObjectAssertions
     {
+        private CatalogPage CatalogPage => Subject as CatalogPage;
         protected override string Identifier => "CatalogAssertions";
 
         public CatalogAssertions(CatalogPage value) : base(value)
@@ -14,11 +15,11 @@ namespace Assertions
         }
 
         [CustomAssertion]
-        public AndConstraint<CatalogAssertions> BeExistsInViewedProductsList(Uri expectedImageUri)
+        public AndConstraint<CatalogAssertions> BeInViewedProductsList(Uri expectedImageUri)
         {
-            (Subject as CatalogPage)
+            CatalogPage
                 .ViewedProductsComponent
-                .GetProductBy(expectedImageUri)
+                .GetProduct(expectedImageUri)
                 .Should().NotBeNull();
 
             return new AndConstraint<CatalogAssertions>(this);

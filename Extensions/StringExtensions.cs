@@ -15,8 +15,10 @@ namespace Extensions
                 int g = int.Parse(match.Groups[2].Value);
                 int b = int.Parse(match.Groups[3].Value);
                 int a = int.Parse(match.Groups[4].Value);
+
                 return Color.FromArgb(a, r, g, b);
             }
+
             return new Color();
         }
     }

@@ -9,37 +9,30 @@ namespace Infrastructure
 {
     public class Product : GeneralProduct
     {
-        private List<IWebElement> Colors => ParentElement.FindElements(By.CssSelector(".color_to_pick_list.clearfix li a")).ToList();
+        private List<IWebElement> ColorOptions => ParentElement.FindElements(By.CssSelector(".color_to_pick_list.clearfix li a")).ToList();
         private IWebElement AddToCartButton => ParentElement.WaitAndFindElement(By.CssSelector(".button-container a"));
         private IWebElement Price => ParentElement.WaitAndFindElement(By.CssSelector(".content_price .price.product-price"));
         private IWebElement Name => ParentElement.WaitAndFindElement(By.CssSelector(".right-block .product-name"));
         protected override IWebElement Image => ParentElement.WaitAndFindElement(By.CssSelector(".product-image-container .product_img_link"));
         public bool IsAddToCartAvailable => AddToCartButton == null ? false : true;
+        public double GetPrice() => double.Parse(Price.Text.Trim('$'));
+        public List<Color> GetAllColorOptions() => ColorOptions.Select(s => s.GetColorOfElement()).ToList();
+        public Color GetColorOption(int index = 0) => ColorOptions[index].GetColorOfElement();
 
         public Product(IWebDriver driver, IWebElement parentElement) : base(driver, parentElement)
         {
         }
 
-        public override Uri GetImageUri() => new Uri(Image.GetAttribute("href"));
-
-        public override DetailsProductPage ClickOnImage() => base.ClickOnImage();
-
-        public double GetPrice() => double.Parse(Price.Text.Substring(1));
-
-        public List<Color> GetColors() => Colors.Select(s => s.GetCssValue("background-color").ConvertToColor()).ToList();
-
-        public Color GetColor(int index = 0) => Colors[index].GetCssValue("background-color").ConvertToColor();
-
-        public CatalogPage StandOnProduct()
+        public Product StandOnProduct()
         {
-            ParentElement.StandOn(Driver, By.CssSelector(".left-block"));
+            Driver.FocusAnElement(ParentElement.WaitAndFindElement(By.CssSelector(".left-block .product-image-container")));
 
-            return new CatalogPage(Driver);
+            return this;
         }
 
         public DetailsProductPage ClickOnColor(int index = 0)
         {
-            Colors[index].Click();
+            ColorOptions[index].Click();
 
             return new DetailsProductPage(Driver);
         }
@@ -57,6 +50,7 @@ namespace Infrastructure
             if (ContinueShopping)
             {
                 Driver.WaitAndFindElement(By.CssSelector("#layer_cart .continue.btn.btn-default.button.exclusive-medium")).Click();
+                Driver.WaitUntilElementDoesntDiplayed(By.CssSelector("#layer_cart"));
 
                 return new CatalogPage(Driver);
             }

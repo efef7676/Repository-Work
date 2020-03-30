@@ -6,6 +6,7 @@ namespace Assertions
 {
     public class GeneralProductAssertions : ObjectAssertions
     {
+        private ProductRow ProductRow => Subject as ProductRow;
         protected override string Identifier => "GeneralProductAssertions";
 
         public GeneralProductAssertions(GeneralProduct value) : base(value)
@@ -13,21 +14,12 @@ namespace Assertions
         }
 
         [CustomAssertion]
-        public AndConstraint<GeneralProductAssertions> BeChangeQtySuccessfully(bool raisePrice, int originQtyValue, double originPrice, int changeIn = 1)
+        public AndConstraint<GeneralProductAssertions> QtyChangedSuccessfully(int expectedQtyValue, double originalPrice)
         {
-            if (raisePrice)
-            {
-                (Subject as ProductRow)
-                    .GetTotalPrice()
-                    .Should()
-                    .Be((originQtyValue + changeIn) * originPrice);
-            }else
-            {
-                (Subject as ProductRow)
-                    .GetTotalPrice()
-                    .Should()
-                    .Be((originQtyValue - changeIn) * originPrice);
-            }
+            ProductRow
+                .GetTotalPrice()
+                .Should()
+                .Be((expectedQtyValue) * originalPrice);
 
             return new AndConstraint<GeneralProductAssertions>(this);
         }

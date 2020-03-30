@@ -5,15 +5,16 @@ namespace Infrastructure
 {
     public class QtyBox : BaseComponent
     {
-        private IWebElement QtyValue => ParentElement.WaitAndFindElement(By.CssSelector(".cart_quantity_input.form-control.grey"));
+        private IWebElement QtyValueInputBox => ParentElement.FindElement(By.CssSelector(".cart_quantity_input.form-control.grey"));
+        private IWebElement QtyValue => ParentElement.FindElement(By.CssSelector("input"));
         private IWebElement DownButton => ParentElement.WaitAndFindElement(By.CssSelector(".cart_quantity_down.btn.btn-default.button-minus"));
         private IWebElement UpButton => ParentElement.WaitAndFindElement(By.CssSelector(".cart_quantity_up.btn.btn-default.button-plus"));
+        public double GetQtyValue() => double.Parse(QtyValue.GetAttribute("value"));
 
         public QtyBox(IWebDriver driver, IWebElement parentElement) : base(driver, parentElement)
         {
         }
 
-        public double GetQtyValue() => double.Parse(QtyValue.GetAttribute("value"));
 
         public CartPage ClickOnUpButton()
         {
@@ -31,8 +32,8 @@ namespace Infrastructure
 
         public CartPage ChangeQty(double number)
         {
-            QtyValue.Clear();
-            QtyValue.SendKeys($"{number}");
+            QtyValueInputBox.Clear();
+            QtyValueInputBox.SendKeys($"{number}");
 
             return new CartPage(Driver);
         }

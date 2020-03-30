@@ -2,6 +2,8 @@
 using FluentAssertions;
 using Infrastructure;
 using Assertions;
+using System.Linq;
+using Core;
 
 namespace Tests
 {
@@ -13,7 +15,7 @@ namespace Tests
         {
             var selectedProduct = HomePage.Categories.ClickOnWomen().StandOnProduct(0);
 
-            selectedProduct.GetColor(1)
+            selectedProduct.GetColorOption(1)
                 .Should()
                 .Be(selectedProduct.ClickOnColor(1).GetSelectedColor());
         }
@@ -29,7 +31,7 @@ namespace Tests
                 .ClickOnMainLogo()
                  .Categories.ClickOnWomen()
                  .Should()
-                 .BeExistsInViewedProductsList(expectedImageUri);
+                 .BeInViewedProductsList(expectedImageUri);
         }
         [TestMethod]
         public void AddProductToCart_ThisProductExistsInCart()
@@ -40,7 +42,7 @@ namespace Tests
 
             (selectedProduct.ClickOnAddToCart(false) as CartPage)
                 .Should()
-                .BeExistsInCart(expectedImageUri);
+                .BeInCart(expectedImageUri);
         }
 
         [TestMethod]
@@ -65,13 +67,26 @@ namespace Tests
         public void FilterByColor_ShowProductsInSelectedColor()
         {
             var cartPage = HomePage.Categories.ClickOnWomen();
-            var selectedColor = cartPage.FilterByColor.GetColor(4);
+            var selectedColor = cartPage.FilterByColor.GetColorOption(4);
 
             cartPage
-                .FilterByColor.ClickOnColor(4)
+                .FilterByColor.ClickOnColorOption(4)
                 .Products
                 .Should()
-                .BeBySelectedColor(selectedColor);
+                .AllAreThisColor(selectedColor);
+        }//Can't check this - problem with filters in website - not loading.
+
+        [TestMethod]
+        public void FilterByPrice_ShowProductsInPriceRange()
+        {
+            var catalogPage = HomePage.Categories.ClickOnWomen()
+                .ChangeFilterPrice(true, true);
+            var range = new PriceRange(catalogPage.FilterByPrice.GetPriceRange());
+
+            catalogPage
+                .Products
+                .Should()
+                .AllAreInThisRange(range);
         }//Can't check this - problem with filters in website - not loading.
     }
 }

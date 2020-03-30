@@ -6,12 +6,11 @@ namespace Infrastructure
     public abstract class GeneralProduct : BaseComponent
     {
         protected abstract IWebElement Image { get; }
+        public virtual Uri GetImageUri() => new Uri(Image.GetAttribute("href"));
 
         public GeneralProduct(IWebDriver driver, IWebElement parentElement) : base(driver, parentElement)
         {
         }
-
-        public abstract Uri GetImageUri();
 
         public virtual DetailsProductPage ClickOnImage()
         {

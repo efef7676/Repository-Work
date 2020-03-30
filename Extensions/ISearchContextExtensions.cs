@@ -2,28 +2,42 @@
 using OpenQA.Selenium.Support.UI;
 using System;
 using OpenQA.Selenium.Interactions;
-
+using Core;
+using System.Drawing;
 
 namespace Extensions
 {
     public static class ISearchContextExtensions
     {
-        public static IWebElement WaitAndFindElement(this ISearchContext iSearchContext, By by)
+
+        public static void FocusAnElement(this IWebDriver driver, IWebElement element) =>
+            new Actions(driver).MoveToElement(element).Perform();
+
+        public static void ClickByOffest(this IWebDriver driver, IWebElement element, int xOffest)
+        {
+            new Actions(driver).MoveToElement(element).MoveByOffset(xOffest, 0).Click().Perform();
+        }
+
+        public static Color GetColorOfElement(this IWebElement element) =>
+            element.GetCssValue("background-color").ConvertToColor();
+
+        public static IWebElement WaitAndFindElement(this ISearchContext searchContext, By by)
         {
             try
             {
-                var wait = new DefaultWait<ISearchContext>(iSearchContext);
-                wait.Timeout = TimeSpan.FromSeconds(15);
+                var wait = new DefaultWait<ISearchContext>(searchContext);
+                wait.Timeout = TimeSpan.FromSeconds(ConfigurationValues.TimeOutWaitSeconds);
+                wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+
                 return wait.Until(ctx =>
                 {
                     var elem = ctx.FindElement(by);
-                    wait.IgnoreExceptionTypes(typeof(NoSuchElementException), typeof(StaleElementReferenceException));
-                    if (!elem.Enabled || !elem.Displayed)
+                    if (elem.Enabled && elem.Displayed)
                     {
-                        return null;
+                        return elem;
                     }
 
-                    return elem;
+                    return null;
                 });
             }
             catch (WebDriverTimeoutException)
@@ -32,44 +46,38 @@ namespace Extensions
             }
         }
 
-        public static void WaitUntilElementIs(this ISearchContext iSearchContext, By by, string expectedTextValue)
+        public static void WaitUntilElementValueIsEqual(this ISearchContext searchContext, By by, string expectedTextValue)
         {
-            var wait = new DefaultWait<ISearchContext>(iSearchContext);
-            wait.Timeout = TimeSpan.FromSeconds(20);
+            var wait = new DefaultWait<ISearchContext>(searchContext);
+            wait.Timeout = TimeSpan.FromSeconds(ConfigurationValues.TimeOutWaitSeconds);
             wait.Until(ctx =>
             {
                 var elem = ctx.FindElement(by);
-                if (!elem.Enabled || !elem.Displayed)
-                    return null;
                 if (elem.GetAttribute("value") == expectedTextValue)
                     return elem;
-
                 return null;
             });
         }
 
-        public static void WaitUntilElementDoesntExists(this ISearchContext iSearchContext, By by)
+        public static void WaitUntilElementDoesntDiplayed(this ISearchContext searchContext, By by)
         {
-            var wait = new DefaultWait<ISearchContext>(iSearchContext);
-            wait.Timeout = TimeSpan.FromSeconds(20);
-            wait.Until(p =>
+            var wait = new DefaultWait<ISearchContext>(searchContext);
+            wait.Timeout = TimeSpan.FromSeconds(ConfigurationValues.TimeOutWaitSeconds);
+            wait.Until(ctx =>
             {
                 try
                 {
-                    return !(p.FindElement(by).Enabled);
+                    return !(ctx.FindElement(by).Displayed);
                 }
-                catch (NoSuchElementException)
+                catch (Exception exception)
                 {
-                    return true;
-                }
-                catch (StaleElementReferenceException)
-                {
-                    return true;
+                    if (exception is StaleElementReferenceException || exception is NoSuchElementException)
+                    {
+                        return true;
+                    }
+                    throw;
                 }
             });
         }
-
-        public static void StandOn(this ISearchContext searchContext, IWebDriver driver, By by) =>
-            new Actions(driver).MoveToElement(searchContext.WaitAndFindElement(by)).Perform();
     }
 }

@@ -15,10 +15,10 @@ namespace Infrastructure
                 return elements == null ? new List<SummarizedProduct>() : elements.Select(s => new SummarizedProduct(Driver, s)).ToList();
             }
         }
+        public SummarizedProduct GetProduct(Uri imageUri) => Products.FirstOrDefault(p => p.GetImageUri() == imageUri);
+
         public ViewedProducts(IWebDriver driver, IWebElement parentElement) : base(driver, parentElement)
         {
         }
-
-        public SummarizedProduct GetProductBy(Uri imageUri) => Products.FirstOrDefault(p => p.GetImageUri() == imageUri);
     }
 }

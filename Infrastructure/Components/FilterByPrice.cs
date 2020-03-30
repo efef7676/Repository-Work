@@ -8,26 +8,43 @@ namespace Infrastructure
     public class FilterByPrice : BaseComponent
     {
         private IWebElement PriceRange => ParentElement.WaitAndFindElement(By.CssSelector("#layered_price_range"));
-        private IWebElement RaisesTheMinPrice => ParentElement.FindElements(By.CssSelector("#layered_price_slider a")).FirstOrDefault();
+        private IWebElement RaisesTheMinPrice => ParentElement.FindElements(By.CssSelector("#layered_price_slider a"))[0];
+        private IWebElement LowerTheMaxPrice => ParentElement.FindElements(By.CssSelector("#layered_price_slider a"))[1];
         private IWebElement ScrollPriceRange => ParentElement.WaitAndFindElement(By.CssSelector(".ui-slider-range.ui-widget-header.ui-corner-all"));
+        public string GetPriceRange() => PriceRange.Text;
 
         public FilterByPrice(IWebDriver driver, IWebElement parentElement) : base(driver, parentElement)
         {
         }
 
-        public string GetPriceRange() => PriceRange.Text;
-
-        public void ChangeFilterPrice(bool toRaiseTheMin)
+        public CatalogPage ChangeMinPrice(bool toRaise)
         {
             int width = ScrollPriceRange.Size.Width;
-            Actions act = new Actions(Driver);
-            if (toRaiseTheMin)
+            if (toRaise)
             {
-                act.MoveToElement(RaisesTheMinPrice).MoveByOffset((width / 3) - 10, 0).Click().Perform();
-            }else
-            {
-                act.MoveToElement(ScrollPriceRange).MoveByOffset((width / 3)+10, 0).Click().Perform();
+                Driver.ClickByOffest(RaisesTheMinPrice, (width / 15));
             }
+            else
+            {
+                Driver.ClickByOffest(RaisesTheMinPrice, -width / 15);
+            }
+
+            return new CatalogPage(Driver);
+        }
+
+        public CatalogPage ChangeMaxPrice(bool toLower)
+        {
+            int width = ScrollPriceRange.Size.Width;
+            if (toLower)
+            {
+                Driver.ClickByOffest(LowerTheMaxPrice, -width / 15);
+            }
+            else
+            {
+                Driver.ClickByOffest(LowerTheMaxPrice, width / 15);
+            }
+
+            return new CatalogPage(Driver);
         }
     }
 }

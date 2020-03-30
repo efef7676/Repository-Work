@@ -16,34 +16,28 @@ namespace Infrastructure
             get
             {
                 var elements = Driver.FindElements(By.CssSelector(".product_list.grid.row li .product-container"));
-                return elements == null ? new List<Product>() : elements.Select(s => new Product(Driver, s)).ToList();
+                return elements.Count == 0 ? new List<Product>() : elements.Select(s => new Product(Driver, s)).ToList();
             }
         }
         public ViewedProducts ViewedProductsComponent => new ViewedProducts(Driver, Driver.WaitAndFindElement(By.CssSelector("#viewed-products_block_left")));
-
         public FilterByColor FilterByColor => new FilterByColor(Driver, Driver.WaitAndFindElement(By.CssSelector("#ul_layered_id_attribute_group_3")));
-
         public FilterByPrice FilterByPrice => new FilterByPrice(Driver, Driver.WaitAndFindElement(By.CssSelector("#ul_layered_price_0")));
+        public Product GetProduct(Uri uri) => Products.FirstOrDefault(p => p.GetImageUri() == uri);
 
         public CatalogPage(IWebDriver driver) : base(driver)
         {
         }
 
-        public Product GetProductBy(Uri uri) => Products.FirstOrDefault(p => p.GetImageUri() == uri);
-
         public Product StandOnProduct(int index = 0)
         {
-            if (index < Products.Count)
-            {
-                Products[index].StandOnProduct();
-            }
+            Products[index].StandOnProduct();
 
             return Products[index];
         }
 
         public CatalogPage NotStandingOnProducts()
         {
-            Driver.StandOn(Driver, By.CssSelector("#header"));
+            Driver.FocusAnElement(Driver.WaitAndFindElement(By.CssSelector("#header")));
 
             return new CatalogPage(Driver);
         }
@@ -57,6 +51,16 @@ namespace Infrastructure
                     StandOnProduct(i).ClickOnAddToCart(true);
                 }
             }
+
+            return new CatalogPage(Driver);
+        }
+
+        public CatalogPage ChangeFilterPrice(bool toRaiseMinPrice, bool toLowerMaxPrice)
+        {
+            FilterByPrice.ChangeMinPrice(toRaiseMinPrice);
+            FilterByPrice.ChangeMaxPrice(toLowerMaxPrice);
+
+            //Wait for the page to load
 
             return new CatalogPage(Driver);
         }

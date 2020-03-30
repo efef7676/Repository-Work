@@ -1,13 +1,15 @@
 ﻿using System.Linq;
 using OpenQA.Selenium;
+using System.Collections.Generic;
 
 namespace Infrastructure
 {
     public class Categories : BaseComponent
     {
-        private IWebElement WomenCategory => ParentElement.FindElements(By.CssSelector("li a")).FirstOrDefault(el => el.Text.ToLower() == "women");
-        private IWebElement DressesCategory => ParentElement.FindElements(By.CssSelector("li a")).FirstOrDefault(el => el.Text.ToLower() == "dresses");
-        private IWebElement TShirtsCategory => ParentElement.FindElements(By.CssSelector("li a")).FirstOrDefault(el => el.Text.ToLower() == "t-shirts");
+        private IWebElement GeneralCategory(string categoryName) => ParentElement.FindElements(By.CssSelector("li a")).FirstOrDefault(el => el.Text.ToLower() == categoryName);
+        private IWebElement WomenCategory => GeneralCategory("women");
+        private IWebElement DressesCategory => GeneralCategory("dresses");
+        private IWebElement TShirtsCategory => GeneralCategory("t-shirts");
 
         public Categories(IWebDriver driver, IWebElement parentElement) : base(driver, parentElement)
         {
