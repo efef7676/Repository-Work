@@ -27,9 +27,9 @@ namespace Assertions
         [CustomAssertion]
         public AndConstraint<CartAssertions> DeletedSuccessfully(Uri expectedImageUri, int originAmountOfProducts)
         {
-                CartPage
-                    .GetProduct(expectedImageUri)
-                    .Should().BeNull();
+            CartPage
+                .GetProduct(expectedImageUri)
+                .Should().BeNull();
 
             return new AndConstraint<CartAssertions>(this);
         }
@@ -37,8 +37,16 @@ namespace Assertions
         [CustomAssertion]
         public AndConstraint<CartAssertions> AmountOfProductsChangedTo(int excpectedAmount)
         {
-            CartPage.Products.Count
-                .Should().Be(excpectedAmount);
+            if (excpectedAmount > 0)
+            {
+                CartPage.Products.Count
+                    .Should().Be(excpectedAmount);
+            }
+            else
+            {
+                CartPage.IsTheCartEmpty
+                    .Should().BeTrue();
+            }
 
             return new AndConstraint<CartAssertions>(this);
         }

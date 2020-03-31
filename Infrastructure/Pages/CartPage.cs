@@ -17,14 +17,14 @@ namespace Infrastructure
                 return elements.Count == 0 ? new List<ProductRow>() : elements.Select(s => new ProductRow(Driver, s)).ToList();
             }
         }
-
+        public bool IsTheCartEmpty => Driver.WaitAndFindElement(By.CssSelector(".alert.alert-warning")) != null;
         public ProductRow GetProduct(Uri imageUri) => Products.FirstOrDefault(p => p.GetImageUri() == imageUri);
 
         public CartPage(IWebDriver driver) : base(driver)
         {
         }
 
-        public CartPage DeleteProductBy(Uri imageUri)
+        public CartPage DeleteProduct(Uri imageUri)
         {
             GetProduct(imageUri).ClickOnDeleteButton();
             Driver.WaitUntilElementDoesntDiplayed(By.CssSelector($"tbody a[href='{imageUri}']"));
@@ -42,7 +42,7 @@ namespace Infrastructure
                 newQty += 1;
                 currentProduct.QtyBox.ClickOnUpButton();
             }
-            else if(!RaiseQty && newQty > 1)
+            else if (!RaiseQty && newQty > 1)
             {
                 newQty -= 1;
                 currentProduct.QtyBox.ClickDownUpButton();
@@ -68,9 +68,10 @@ namespace Infrastructure
                     .QtyBox
                     .ParentElement
                     .WaitUntilElementValueIsEqual(By.CssSelector("input"), $"{changeTo}");
-            }else
+            }
+            else
             {
-                new Actions(Driver).DoubleClick(currentProduct.ParentElement.FindElement(By.CssSelector(".cart_total"))).Perform();
+                new Actions(Driver).Click(currentProduct.ParentElement.FindElement(By.CssSelector(".cart_total"))).Perform();
             }
 
             return currentProduct;

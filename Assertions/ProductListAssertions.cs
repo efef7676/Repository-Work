@@ -32,7 +32,7 @@ namespace Assertions
         public AndConstraint<ProductListAssertions> AllAreInThisRange(PriceRange range)
         {
             Products
-                .All(product => range.IsInRange(product.StandOnProduct().GetPrice()) == true)
+                .All(product => range.IsInRange(product.FocusAProduct().GetPrice()) == true)
                 .Should()
                 .BeTrue();
 

@@ -10,11 +10,11 @@ namespace Infrastructure
     public class Product : GeneralProduct
     {
         private List<IWebElement> ColorOptions => ParentElement.FindElements(By.CssSelector(".color_to_pick_list.clearfix li a")).ToList();
-        private IWebElement AddToCartButton => ParentElement.WaitAndFindElement(By.CssSelector(".button-container a"));
+        private IWebElement AddToCartButton => ParentElement.WaitAndFindElement(By.CssSelector(".right-block .button-container .button.ajax_add_to_cart_button.btn.btn-default"));
         private IWebElement Price => ParentElement.WaitAndFindElement(By.CssSelector(".content_price .price.product-price"));
         private IWebElement Name => ParentElement.WaitAndFindElement(By.CssSelector(".right-block .product-name"));
         protected override IWebElement Image => ParentElement.WaitAndFindElement(By.CssSelector(".product-image-container .product_img_link"));
-        public bool IsAddToCartAvailable => AddToCartButton == null ? false : true;
+        public bool IsAddToCartAvailable => ParentElement.WaitAndFindElement(By.CssSelector(".right-block .button-container .button.ajax_add_to_cart_button.btn.btn-default span")) == null ? false : true;
         public double GetPrice() => double.Parse(Price.Text.Trim('$'));
         public List<Color> GetAllColorOptions() => ColorOptions.Select(s => s.GetColorOfElement()).ToList();
         public Color GetColorOption(int index = 0) => ColorOptions[index].GetColorOfElement();
@@ -23,14 +23,14 @@ namespace Infrastructure
         {
         }
 
-        public Product StandOnProduct()
+        public Product FocusAProduct()
         {
             Driver.FocusAnElement(ParentElement.WaitAndFindElement(By.CssSelector(".left-block .product-image-container")));
 
             return this;
         }
 
-        public DetailsProductPage ClickOnColor(int index = 0)
+        public DetailsProductPage ClickOnColorOption(int index = 0)
         {
             ColorOptions[index].Click();
 
@@ -56,6 +56,7 @@ namespace Infrastructure
             }
 
             Driver.WaitAndFindElement(By.CssSelector("#layer_cart .btn.btn-default.button.button-medium")).Click();
+            Driver.WaitUntilElementDoesntDiplayed(By.CssSelector("#layer_cart"));
 
             return new CartPage(Driver);
         }

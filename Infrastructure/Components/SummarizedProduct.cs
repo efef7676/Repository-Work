@@ -9,7 +9,6 @@ namespace Infrastructure
         protected override IWebElement Image => ParentElement.WaitAndFindElement(By.CssSelector("a"));
         private IWebElement Title => ParentElement.WaitAndFindElement(By.CssSelector("h5 a"));
         private IWebElement Description => ParentElement.WaitAndFindElement(By.CssSelector("p .product-description"));
-        //public override DetailsProductPage ClickOnImage() => base.ClickOnImage();
         public string GetDescription() => Description.Text;
 
         public SummarizedProduct(IWebDriver driver, IWebElement parentElement) : base(driver, parentElement)

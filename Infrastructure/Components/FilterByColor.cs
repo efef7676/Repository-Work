@@ -19,7 +19,7 @@ namespace Infrastructure
         {
             ColorOptionsToFilter[index].FindElement(By.CssSelector("label a")).Click();
 
-            return new CatalogPage(Driver);
+            return  new CatalogPage(Driver);
         }
     }
 }

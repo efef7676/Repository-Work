@@ -13,36 +13,37 @@ namespace Extensions
         public static void FocusAnElement(this IWebDriver driver, IWebElement element) =>
             new Actions(driver).MoveToElement(element).Perform();
 
-        public static void ClickByOffest(this IWebDriver driver, IWebElement element, int xOffest)
-        {
+        public static void ClickByOffest(this IWebDriver driver, IWebElement element, int xOffest) =>
             new Actions(driver).MoveToElement(element).MoveByOffset(xOffest, 0).Click().Perform();
-        }
 
         public static Color GetColorOfElement(this IWebElement element) =>
             element.GetCssValue("background-color").ConvertToColor();
 
         public static IWebElement WaitAndFindElement(this ISearchContext searchContext, By by)
         {
+            var wait = new DefaultWait<ISearchContext>(searchContext);
+            wait.Timeout = TimeSpan.FromSeconds(ConfigurationValues.TimeOutWaitSeconds);
+
             try
             {
-                var wait = new DefaultWait<ISearchContext>(searchContext);
-                wait.Timeout = TimeSpan.FromSeconds(ConfigurationValues.TimeOutWaitSeconds);
-                wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-
                 return wait.Until(ctx =>
                 {
                     var elem = ctx.FindElement(by);
-                    if (elem.Enabled && elem.Displayed)
+                    if (elem.Displayed)
                     {
                         return elem;
                     }
-
                     return null;
                 });
             }
             catch (WebDriverTimeoutException)
             {
-                return null;
+                if (!searchContext.FindElement(by).Displayed)
+                {
+                    return null;
+                }
+
+                throw;
             }
         }
 
@@ -50,11 +51,15 @@ namespace Extensions
         {
             var wait = new DefaultWait<ISearchContext>(searchContext);
             wait.Timeout = TimeSpan.FromSeconds(ConfigurationValues.TimeOutWaitSeconds);
+
             wait.Until(ctx =>
             {
                 var elem = ctx.FindElement(by);
                 if (elem.GetAttribute("value") == expectedTextValue)
+                {
                     return elem;
+                }
+
                 return null;
             });
         }
@@ -63,6 +68,7 @@ namespace Extensions
         {
             var wait = new DefaultWait<ISearchContext>(searchContext);
             wait.Timeout = TimeSpan.FromSeconds(ConfigurationValues.TimeOutWaitSeconds);
+
             wait.Until(ctx =>
             {
                 try
@@ -75,6 +81,7 @@ namespace Extensions
                     {
                         return true;
                     }
+
                     throw;
                 }
             });

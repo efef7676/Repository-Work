@@ -12,7 +12,7 @@ namespace Infrastructure
             get
             {
                 var elements = ParentElement.FindElements(By.CssSelector(".block_content.products-block ul li"));
-                return elements == null ? new List<SummarizedProduct>() : elements.Select(s => new SummarizedProduct(Driver, s)).ToList();
+                return elements.Count == 0 ? new List<SummarizedProduct>() : elements.Select(s => new SummarizedProduct(Driver, s)).ToList();
             }
         }
         public SummarizedProduct GetProduct(Uri imageUri) => Products.FirstOrDefault(p => p.GetImageUri() == imageUri);

@@ -11,7 +11,6 @@
             TotalPrice = product.GetTotalPrice();
             UnitPrice = product.GetUnitPrice();
             QtyValue = product.QtyBox.GetQtyValue();
-
         }
     }
 }

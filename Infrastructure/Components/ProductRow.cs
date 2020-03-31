@@ -11,7 +11,6 @@ namespace Infrastructure
         private IWebElement UnitPrice => ParentElement.WaitAndFindElement(By.CssSelector(".cart_unit span span"));
         protected override IWebElement Image => ParentElement.WaitAndFindElement(By.CssSelector(".cart_product a"));
         public QtyBox QtyBox => new QtyBox(Driver, ParentElement.WaitAndFindElement(By.CssSelector(".cart_quantity.text-center")));
-        //public override DetailsProductPage ClickOnImage() => base.ClickOnImage();
         public double GetTotalPrice() => double.Parse(TotalPrice.Text.Trim('$'));
         public double GetUnitPrice() => double.Parse(UnitPrice.Text.Trim('$'));
 

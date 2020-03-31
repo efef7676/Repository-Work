@@ -3,72 +3,72 @@ using FluentAssertions;
 using Assertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
+using System;
 
 namespace Tests
 {
     [TestClass]
     public class CartPageTests : BaseTest
     {
+        private CartPage _cartPage;
+        private Product _productToAdd;
+        private Uri _expectedImageUri;
+
+        [TestInitialize]
+        public override void TestInitialize()
+        {
+            base.TestInitialize();
+            _productToAdd = HomePage.Categories.ClickOnWomen().FocusAProduct(5);
+            _expectedImageUri = _productToAdd.GetImageUri();
+            _cartPage = (_productToAdd.ClickOnAddToCart(false) as CartPage);
+
+        }
+
         [TestMethod]
         public void DeleteProductFromCartWithProducts_WillSuccess()
         {
             var catalogPage = HomePage.Categories.ClickOnWomen().AddNProductsToCart(3);
-            var productToAdd = catalogPage.StandOnProduct(6);
-            var expectedImageUri = productToAdd.GetImageUri();
-            var currentCartPage = (productToAdd.ClickOnAddToCart(false) as CartPage);
-            var originAmount = currentCartPage.Products.Count;
+            _cartPage = HomePage.Categories.ClickOnWomen().AddNProductsToCart(3).ClickOnCart();
+            var originalAmountOfProducts = _cartPage.Products.Count;
 
-            currentCartPage
-                .DeleteProductBy(expectedImageUri)
+            _cartPage
+                .DeleteProduct(_expectedImageUri)
                 .Should()
-                .DeletedSuccessfully(expectedImageUri, originAmount)
+                .DeletedSuccessfully(_expectedImageUri, originalAmountOfProducts)
                 .And
-                .AmountOfProductsChangedTo(originAmount-1);
+                .AmountOfProductsChangedTo(originalAmountOfProducts - 1);
         }
+
         [TestMethod]
         public void DeleteLastProductFromCart_WillSuccess()
         {
-            var productToAdd = HomePage.Categories.ClickOnWomen()
-               .StandOnProduct(0);
-            var expectedImageUri = productToAdd.GetImageUri();
-            var currentCartPage = (productToAdd.ClickOnAddToCart(false) as CartPage);
-            var originAmount = currentCartPage.Products.Count;
+            var originalAmountOfProducts = _cartPage.Products.Count;
 
-            currentCartPage
-                .DeleteProductBy(expectedImageUri)
+            _cartPage
+                .DeleteProduct(_expectedImageUri)
                 .Should()
-                .DeletedSuccessfully(expectedImageUri, originAmount)
+                .DeletedSuccessfully(_expectedImageUri, originalAmountOfProducts)
                 .And
                 .AmountOfProductsChangedTo(0);
         }
+
         [TestMethod]
         public void AddToQtyOfExistsProduct_WillSuccess()
         {
-            var productToAdd = HomePage.Categories.ClickOnWomen()
-               .StandOnProduct(0);
-            var expectedImageUri = productToAdd.GetImageUri();
-            var currentCartPage = (productToAdd.ClickOnAddToCart(false) as CartPage);
-            var productStorage = new ProductRowStorage(currentCartPage.GetProduct(expectedImageUri));
+            var productRowStorage = new ProductRowStorage(_cartPage.GetProduct(_expectedImageUri));
 
-            currentCartPage
-                .ChangeQtyInOne(true, expectedImageUri)
+            _cartPage
+                .ChangeQtyInOne(true, _expectedImageUri)
                 .Should()
-                .QtyChangedSuccessfully((int)productStorage.QtyValue+1, productStorage.UnitPrice);
+                .QtyChangedSuccessfully((int)productRowStorage.QtyValue + 1, productRowStorage.UnitPrice);
         }
 
         [TestMethod]
         public void InsertIrrationalNumberToQty_WillFail()
         {
-            var productToAdd = HomePage.Categories.ClickOnWomen()
-               .StandOnProduct(0);
-            var expectedImageUri = productToAdd.GetImageUri();
-            var currentCartPage = (productToAdd.ClickOnAddToCart(false) as CartPage);
-            var productStorage = new ProductRowStorage(currentCartPage.GetProduct(expectedImageUri));
+            var productStorage = new ProductRowStorage(_cartPage.GetProduct(_expectedImageUri));
 
-            var productAfterChange = currentCartPage
-                .ChangeQtyTo(2.5, expectedImageUri);
-
-            Thread.Sleep(3000); //need to replace with...??
+            var productAfterChange = _cartPage.ChangeQtyTo(2.5, _expectedImageUri);
 
             productAfterChange
                 .QtyBox.GetQtyValue()
@@ -79,14 +79,10 @@ namespace Tests
         [TestMethod]
         public void InsertIntegerToQty_WillSuccess()
         {
-            var productToAdd = HomePage.Categories.ClickOnWomen()
-               .StandOnProduct(0);
-            var expectedImageUri = productToAdd.GetImageUri();
-            var currentCartPage = (productToAdd.ClickOnAddToCart(false) as CartPage);
-            var productStorage = new ProductRowStorage(currentCartPage.GetProduct(expectedImageUri));
+            var productStorage = new ProductRowStorage(_cartPage.GetProduct(_expectedImageUri));
 
-            currentCartPage
-                .ChangeQtyTo(9, expectedImageUri)
+            _cartPage
+                .ChangeQtyTo(9, _expectedImageUri)
                  .Should()
                  .QtyChangedSuccessfully(9, productStorage.UnitPrice);
         }

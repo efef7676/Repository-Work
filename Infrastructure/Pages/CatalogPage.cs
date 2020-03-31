@@ -11,6 +11,8 @@ namespace Infrastructure
 {
     public class CatalogPage : BasePage, IHasProducts<Product>
     {
+        private void WaitCatalogPageToFinishLoading() =>
+              Driver.WaitUntilElementDoesntDiplayed(By.CssSelector(".product_list.grid.row p img"));
         public List<Product> Products
         {
             get
@@ -28,9 +30,9 @@ namespace Infrastructure
         {
         }
 
-        public Product StandOnProduct(int index = 0)
+        public Product FocusAProduct(int index = 0)
         {
-            Products[index].StandOnProduct();
+            Products[index].FocusAProduct();
 
             return Products[index];
         }
@@ -39,7 +41,7 @@ namespace Infrastructure
         {
             Driver.FocusAnElement(Driver.WaitAndFindElement(By.CssSelector("#header")));
 
-            return new CatalogPage(Driver);
+            return this;
         }
 
         public CatalogPage AddNProductsToCart(int numberOfProductsToAdd)
@@ -48,19 +50,32 @@ namespace Infrastructure
             {
                 for (int i = 0; i < numberOfProductsToAdd; i++)
                 {
-                    StandOnProduct(i).ClickOnAddToCart(true);
+                    FocusAProduct(i).ClickOnAddToCart(true);
                 }
             }
+
+            return this;
+        }
+        public CatalogPage ChangeMinPriceFilter(bool toRaiseMinPrice)
+        {
+            FilterByPrice.ChangeMinPrice(toRaiseMinPrice);
+            WaitCatalogPageToFinishLoading();
 
             return new CatalogPage(Driver);
         }
 
-        public CatalogPage ChangeFilterPrice(bool toRaiseMinPrice, bool toLowerMaxPrice)
+        public CatalogPage ChangeMaxPriceFilter(bool toLowerMaxPrice)
         {
-            FilterByPrice.ChangeMinPrice(toRaiseMinPrice);
             FilterByPrice.ChangeMaxPrice(toLowerMaxPrice);
+            WaitCatalogPageToFinishLoading();
 
-            //Wait for the page to load
+            return new CatalogPage(Driver);
+        }
+
+        public CatalogPage ClickOnColorOptionToFilter(int index = 0)
+        {
+            FilterByColor.ClickOnColorOption(index);
+            WaitCatalogPageToFinishLoading();
 
             return new CatalogPage(Driver);
         }

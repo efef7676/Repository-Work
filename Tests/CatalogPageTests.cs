@@ -13,18 +13,17 @@ namespace Tests
         [TestMethod]
         public void SelectProductByColor_ShowTheProductWithThisColor()
         {
-            var selectedProduct = HomePage.Categories.ClickOnWomen().StandOnProduct(0);
+            var selectedProduct = HomePage.Categories.ClickOnWomen().FocusAProduct(0);
 
             selectedProduct.GetColorOption(1)
                 .Should()
-                .Be(selectedProduct.ClickOnColor(1).GetSelectedColor());
+                .Be(selectedProduct.ClickOnColorOption(1).GetSelectedColor());
         }
 
         [TestMethod]
         public void ViewedProduct_ShouldExistsInViewedProductsList()
         {
-            var productToView = HomePage.Categories.ClickOnWomen()
-                .StandOnProduct(0);
+            var productToView = HomePage.Categories.ClickOnWomen().FocusAProduct(0);
             var expectedImageUri = productToView.GetImageUri();
 
             productToView.ClickOnName()
@@ -36,8 +35,7 @@ namespace Tests
         [TestMethod]
         public void AddProductToCart_ThisProductExistsInCart()
         {
-            var selectedProduct = HomePage.Categories.ClickOnWomen()
-                .StandOnProduct(0);
+            var selectedProduct = HomePage.Categories.ClickOnWomen().FocusAProduct(0);
             var expectedImageUri = selectedProduct.GetImageUri();
 
             (selectedProduct.ClickOnAddToCart(false) as CartPage)
@@ -58,7 +56,7 @@ namespace Tests
         public void WhileMouseIsOnProduct_AddToCartButtonAvailable()
         {
             HomePage.Categories.ClickOnWomen()
-                .StandOnProduct(4)
+                .FocusAProduct(4)
                 .IsAddToCartAvailable
                 .Should().BeTrue();
         }
@@ -70,7 +68,7 @@ namespace Tests
             var selectedColor = cartPage.FilterByColor.GetColorOption(4);
 
             cartPage
-                .FilterByColor.ClickOnColorOption(4)
+                .ClickOnColorOptionToFilter(4)
                 .Products
                 .Should()
                 .AllAreThisColor(selectedColor);
@@ -80,7 +78,7 @@ namespace Tests
         public void FilterByPrice_ShowProductsInPriceRange()
         {
             var catalogPage = HomePage.Categories.ClickOnWomen()
-                .ChangeFilterPrice(true, true);
+                .ChangeMaxPriceFilter(true).ChangeMinPriceFilter(true);
             var range = new PriceRange(catalogPage.FilterByPrice.GetPriceRange());
 
             catalogPage
