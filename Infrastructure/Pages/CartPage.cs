@@ -32,7 +32,7 @@ namespace Infrastructure
             return new CartPage(Driver);
         }
 
-        public ProductRow ChangeQtyInOne(bool RaiseQty, Uri imageUri)
+        public ProductRow ChangeQtyInOneByClicking(bool RaiseQty, Uri imageUri)
         {
             var currentProduct = GetProduct(imageUri);
             var newQty = currentProduct.QtyBox.GetQtyValue();

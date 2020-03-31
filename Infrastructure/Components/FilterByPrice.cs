@@ -20,7 +20,6 @@ namespace Infrastructure
 
         public CatalogPage ChangeMinPrice(bool toRaise)
         {
-            int width = ScrollbarPriceRange.Size.Width;
             if (toRaise)
             {
                 Driver.ClickByOffest(RaisesTheMinPrice, ScrollbarWidthForMove);
@@ -35,7 +34,6 @@ namespace Infrastructure
 
         public CatalogPage ChangeMaxPrice(bool toLower)
         {
-            int width = ScrollbarPriceRange.Size.Width;
             if (toLower)
             {
                 Driver.ClickByOffest(LowerTheMaxPrice, -ScrollbarWidthForMove);

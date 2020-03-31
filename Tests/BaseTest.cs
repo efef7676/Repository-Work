@@ -2,6 +2,7 @@
 using Infrastructure;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using Core;
 
 namespace Tests
 {
@@ -15,7 +16,7 @@ namespace Tests
         public virtual void TestInitialize()
         {
             _driver = new ChromeDriver();
-            _driver.Navigate().GoToUrl("http://automationpractice.com/index.php");
+            _driver.Navigate().GoToUrl(ConfigurationValues.WebsiteUrl);
             _driver.Manage().Window.Maximize();
             HomePage = new HomePage(_driver);
         }

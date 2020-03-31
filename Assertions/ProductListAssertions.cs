@@ -29,10 +29,10 @@ namespace Assertions
         }
 
         [CustomAssertion]
-        public AndConstraint<ProductListAssertions> AllAreInThisRange(PriceRange range)
+        public AndConstraint<ProductListAssertions> AllAreInThisRange(PriceRange priceRange)
         {
             Products
-                .All(product => range.IsInRange(product.FocusAProduct().GetPrice()) == true)
+                .All(product => priceRange.IsInRange(product.FocusAProduct().GetPrice()) == true)
                 .Should()
                 .BeTrue();
 

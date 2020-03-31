@@ -14,12 +14,34 @@ namespace Assertions
         }
 
         [CustomAssertion]
-        public AndConstraint<GeneralProductAssertions> QtyChangedSuccessfully(int expectedQtyValue, double unitPrice)
+        public AndConstraint<GeneralProductAssertions> ProductQtyChangedSuccessfully(int expectedQtyValue, double unitPrice)
         {
             ProductRow
                 .GetTotalPrice()
                 .Should()
                 .Be((expectedQtyValue) * unitPrice);
+
+            return new AndConstraint<GeneralProductAssertions>(this);
+        }
+
+        [CustomAssertion]
+        public AndConstraint<GeneralProductAssertions> ProductPriceDoesntChanged(double originalPrice)
+        {
+            ProductRow
+                .GetTotalPrice()
+                .Should()
+                .Be(originalPrice);
+
+            return new AndConstraint<GeneralProductAssertions>(this);
+        }
+
+        [CustomAssertion]
+        public AndConstraint<GeneralProductAssertions> ProductQtyHasnotChanged(int originalQty)
+        {
+            ProductRow
+                .QtyBox.GetQtyValue()
+                .Should()
+                .Be(originalQty);
 
             return new AndConstraint<GeneralProductAssertions>(this);
         }

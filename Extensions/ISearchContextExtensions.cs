@@ -16,7 +16,7 @@ namespace Extensions
         public static void ClickByOffest(this IWebDriver driver, IWebElement element, int xOffest) =>
             new Actions(driver).MoveToElement(element).MoveByOffset(xOffest, 0).Click().Perform();
 
-        public static Color GetColorOfElement(this IWebElement element) =>
+        public static Color GetColorOfElementBackground(this IWebElement element) =>
             element.GetCssValue("background-color").ConvertToColor();
 
         public static IWebElement WaitAndFindElement(this ISearchContext searchContext, By by)

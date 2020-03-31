@@ -47,6 +47,7 @@ namespace Tests
         public void WhileMouseIsntOnProduct_AddToCartButtonNotAvailable()
         {
             HomePage.Categories.ClickOnWomen()
+                .NotStandingOnProducts()
                 .Products[3]
                 .IsAddToCartAvailable
                 .Should().BeFalse();
@@ -85,6 +86,22 @@ namespace Tests
                 .Products
                 .Should()
                 .AllAreInThisRange(range);
+        }//Can't check this - problem with filters in website - not loading.
+
+        [TestMethod]
+        public void FilterByPriceAndColor_ShowProductsInPriceRangeAndInSelectedColor()
+        {
+            var catalogPage = HomePage.Categories.ClickOnWomen();
+            var colorToSelect = catalogPage.FilterByColor.GetColorOption(3);
+            catalogPage = catalogPage.ChangeMaxPriceFilter(true).ChangeMinPriceFilter(true);
+            var range = new PriceRange(catalogPage.FilterByPrice.GetPriceRange());
+
+            catalogPage
+                .Products
+                .Should()
+                .AllAreInThisRange(range)
+                .And
+                .AllAreThisColor(colorToSelect);
         }//Can't check this - problem with filters in website - not loading.
     }
 }

@@ -27,7 +27,6 @@ namespace Tests
         [TestMethod]
         public void DeleteProductFromCartWithProducts_WillSuccess()
         {
-            var catalogPage = HomePage.Categories.ClickOnWomen().AddNProductsToCart(3);
             _cartPage = HomePage.Categories.ClickOnWomen().AddNProductsToCart(3).ClickOnCart();
             var originalAmountOfProducts = _cartPage.Products.Count;
 
@@ -58,22 +57,22 @@ namespace Tests
             var productRowStorage = new ProductRowStorage(_cartPage.GetProduct(_expectedImageUri));
 
             _cartPage
-                .ChangeQtyInOne(true, _expectedImageUri)
+                .ChangeQtyInOneByClicking(true, _expectedImageUri)
                 .Should()
-                .QtyChangedSuccessfully((int)productRowStorage.QtyValue + 1, productRowStorage.UnitPrice);
+                .ProductQtyChangedSuccessfully((int)productRowStorage.QtyValue + 1, productRowStorage.UnitPrice);
         }
 
         [TestMethod]
         public void InsertIrrationalNumberToQty_WillFail()
         {
             var productStorage = new ProductRowStorage(_cartPage.GetProduct(_expectedImageUri));
-
             var productAfterChange = _cartPage.ChangeQtyTo(2.5, _expectedImageUri);
 
             productAfterChange
-                .QtyBox.GetQtyValue()
                 .Should()
-                .Be(productStorage.QtyValue);
+                .ProductQtyHasnotChanged((int)productStorage.QtyValue)
+                .And
+                .ProductPriceDoesntChanged(productStorage.TotalPrice);
         }
 
         [TestMethod]
@@ -84,7 +83,7 @@ namespace Tests
             _cartPage
                 .ChangeQtyTo(9, _expectedImageUri)
                  .Should()
-                 .QtyChangedSuccessfully(9, productStorage.UnitPrice);
+                 .ProductQtyChangedSuccessfully(9, productStorage.UnitPrice);
         }
     }
 }

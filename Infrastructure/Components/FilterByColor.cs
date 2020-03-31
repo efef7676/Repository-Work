@@ -9,7 +9,7 @@ namespace Infrastructure
     public class FilterByColor : BaseComponent
     {
         private List<IWebElement> ColorOptionsToFilter => ParentElement.FindElements(By.CssSelector("#ul_layered_id_attribute_group_3 li")).ToList();
-        public Color GetColorOption(int index = 0) => ColorOptionsToFilter[index].WaitAndFindElement(By.CssSelector("input")).GetColorOfElement();
+        public Color GetColorOption(int index = 0) => ColorOptionsToFilter[index].WaitAndFindElement(By.CssSelector("input")).GetColorOfElementBackground();
 
         public FilterByColor(IWebDriver driver, IWebElement parentElement) : base(driver, parentElement)
         {

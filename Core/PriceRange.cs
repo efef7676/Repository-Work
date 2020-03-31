@@ -2,8 +2,8 @@
 {
     public class PriceRange
     {
-        public double StartingPrice { get; set; }
-        public double EndPrice { get; set; }
+        private double StartingPrice { get; set; }
+        private double EndPrice { get; set; }
         public string GetRange() => $"${StartingPrice} - ${EndPrice}";
         public bool IsInRange(double price) => price >= StartingPrice && price <= EndPrice;
 

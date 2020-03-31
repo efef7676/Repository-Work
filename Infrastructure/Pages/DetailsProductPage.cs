@@ -7,7 +7,7 @@ namespace Infrastructure
     public class DetailsProductPage : BasePage
     {
         private IWebElement SelectedColor => Driver.WaitAndFindElement(By.CssSelector(".attribute_list li .selected"));
-        public Color GetSelectedColor() => SelectedColor.GetColorOfElement();
+        public Color GetSelectedColor() => SelectedColor.GetColorOfElementBackground();
 
         public DetailsProductPage(IWebDriver driver) : base(driver)
         {

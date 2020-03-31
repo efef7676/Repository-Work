@@ -16,8 +16,8 @@ namespace Infrastructure
         protected override IWebElement Image => ParentElement.WaitAndFindElement(By.CssSelector(".product-image-container .product_img_link"));
         public bool IsAddToCartAvailable => ParentElement.WaitAndFindElement(By.CssSelector(".right-block .button-container .button.ajax_add_to_cart_button.btn.btn-default span")) == null ? false : true;
         public double GetPrice() => double.Parse(Price.Text.Trim('$'));
-        public List<Color> GetAllColorOptions() => ColorOptions.Select(s => s.GetColorOfElement()).ToList();
-        public Color GetColorOption(int index = 0) => ColorOptions[index].GetColorOfElement();
+        public List<Color> GetAllColorOptions() => ColorOptions.Select(s => s.GetColorOfElementBackground()).ToList();
+        public Color GetColorOption(int index = 0) => ColorOptions[index].GetColorOfElementBackground();
 
         public Product(IWebDriver driver, IWebElement parentElement) : base(driver, parentElement)
         {
@@ -57,7 +57,7 @@ namespace Infrastructure
 
             Driver.WaitAndFindElement(By.CssSelector("#layer_cart .btn.btn-default.button.button-medium")).Click();
             Driver.WaitUntilElementDoesntDiplayed(By.CssSelector("#layer_cart"));
-
+            
             return new CartPage(Driver);
         }
 
